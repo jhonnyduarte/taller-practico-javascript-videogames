@@ -1,9 +1,18 @@
 
 const canvas = document.querySelector('#game');
 const game = canvas.getContext('2d');
+const btnUp = document.querySelector('#up');
+const btnLeft = document.querySelector('#left');
+const btnRight = document.querySelector('#right');
+const btnDown = document.querySelector('#down');
 
 let canvasSize;
 let elementSize;
+
+const playerPosition = {
+    x: undefined,
+    y: undefined,
+}
 
 window.addEventListener('load',setCanvasSize);
 window.addEventListener('resize',setCanvasSize);
@@ -36,22 +45,53 @@ function starGame(){
     mapRowCols.forEach((row,rowI) => {
         row.forEach((col,colI) => {
             const emoji = emojis[col];
-            const posX = (elementSize ) * (colI + 1.1);
+            const posX = (elementSize ) * (colI + 1.2);
             const posY = (elementSize ) * (rowI + 0.85);
+
+            if(col == 'O'){
+                playerPosition.x = posX;
+                playerPosition.y = posY;
+            }            
+
             game.fillText(emoji,posX,posY);
         });
     });    
 
-
-    // for (let row = 1; row <= 10; row++) {
-        
-    //     for (let col = 1; col <= 10; col++) {
-
-    //         game.fillText(emojis[mapRowCols[row - 1][col -1]]
-    //             ,elementSize * col+5,elementSize * row-10);
-
-    //     }
-    // }
-
+    movePlayer();
 }
+
+function movePlayer(){
+    game.fillText(emojis['PLAYER'],playerPosition.x,playerPosition.y);
+}
+
+window.addEventListener('keydown',moveByKeys);
+btnUp.addEventListener('click',moveUp);
+btnLeft.addEventListener('click',moveLeft);
+btnRight.addEventListener('click',moveRight);
+btnDown.addEventListener('click',moveDown);
+
+function moveByKeys(event){
+    if(event.key == 'ArrowUp') moveUp();
+    else if(event.key == 'ArrowLeft') moveLeft();   
+    else if(event.key == 'ArrowRight') moveRight();
+    else if(event.key == 'ArrowDown') moveDown();
+}
+
+function moveUp(){
+    console.log('Mequiero mover hacia arriba');
+    playerPosition.y -= elementSize;
+    movePlayer();
+}
+function moveLeft(){
+    console.log('Mequiero mover hacia la izquierda');
+}
+function moveRight(){
+    console.log('Mequiero mover hacia la derecha');
+}
+function moveDown(){
+    console.log('Mequiero mover hacia abajo');
+}
+
+
+
 
