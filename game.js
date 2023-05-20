@@ -13,6 +13,11 @@ const playerPosition = {
     x: undefined,
     y: undefined,
 }
+const giftPosition = {
+    x: undefined,
+    y: undefined,
+}
+let enemyPosition = [];
 
 window.addEventListener('load',setCanvasSize);
 window.addEventListener('resize',setCanvasSize);
@@ -42,20 +47,29 @@ function starGame(){
     const mapRowCols = mapRows.map(row => row.trim().split(''));
     console.log({map,mapRows,mapRowCols});
 
+    enemyPosition = [];
     game.clearRect(0,0,canvasSize,canvasSize);
 
     mapRowCols.forEach((row,rowI) => {
         row.forEach((col,colI) => {
             const emoji = emojis[col];
-            const posX = (elementSize ) * (colI + 1.2);
-            const posY = (elementSize ) * (rowI + 0.85);
+            const posX = elementSize  * (colI + 1.2);
+            const posY = elementSize  * (rowI + 0.85);
 
             if(col == 'O'){
                 if(!playerPosition.x && !playerPosition.y){
                     playerPosition.x = posX;
                     playerPosition.y = posY;
                 }
-            }            
+            } else if(col == 'I'){
+                giftPosition.x = posX;
+                giftPosition.y = posY;
+            } else if(col == 'X'){
+                enemyPosition.push({
+                    x: posX,
+                    y: posY,
+                });
+            }          
 
             game.fillText(emoji,posX,posY);
         });
@@ -65,7 +79,26 @@ function starGame(){
 }
 
 function movePlayer(){
+    const giftColisionX = playerPosition.x.toFixed(2) == giftPosition.x.toFixed(2);
+    const giftColisiony = playerPosition.y.toFixed(2) == giftPosition.y.toFixed(2);
+    const giftColision = giftColisionX && giftColisiony;
+
+    if(giftColision){
+        console.log('Subiste de Nivel!!');
+    }
+
+    const enemyCollision = enemyPosition.find(enemy => {
+        const enemyCollisionX = enemy.x.toFixed(2) == playerPosition.x.toFixed(2);
+        const enemyCollisionY = enemy.y.toFixed(2) == playerPosition.y.toFixed(2);
+        return enemyCollisionX && enemyCollisionY
+    });
+
+    if(enemyCollision){
+        console.log('Pisaste una Bomba!!');
+    }
+
     game.fillText(emojis['PLAYER'],playerPosition.x,playerPosition.y);
+
 }
 
 window.addEventListener('keydown',moveByKeys);
@@ -82,24 +115,46 @@ function moveByKeys(event){
 }
 
 function moveUp(){
+    
     console.log('Mequiero mover hacia arriba');
-    playerPosition.y -= elementSize;
-    starGame();
+    if((playerPosition.y - elementSize) < 0){
+        console.log('Out!!!');
+    }else{
+        playerPosition.y -= elementSize;
+        starGame();
+    }
+    console.log(playerPosition.y);
+    console.log(elementSize);
+    
 }
 function moveLeft(){
     console.log('Mequiero mover hacia la izquierda');
-    playerPosition.x -= elementSize;
-    starGame();
+    if(playerPosition.x - elementSize < elementSize){
+        console.log('Out!!!');
+    } else {
+        playerPosition.x -= elementSize;
+        starGame();
+    }
 }
 function moveRight(){
     console.log('Mequiero mover hacia la derecha');
-    playerPosition.x += elementSize;
+    if(playerPosition.x + elementSize > canvasSize + elementSize){
+        console.log('Out!!');
+    } else{
+        playerPosition.x += elementSize;
     starGame();
+    }
+    
 }
 function moveDown(){
     console.log('Mequiero mover hacia abajo');
-    playerPosition.y += elementSize;
-    starGame();
+    if(playerPosition.y + elementSize > canvasSize){
+        console.log('Out!!');
+    } else {
+        playerPosition.y += elementSize;
+        starGame();
+    }
+    
 }
 
 
